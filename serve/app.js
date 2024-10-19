@@ -124,11 +124,13 @@ app.get('/getVerInfo',(req,res) => {
 const SuperadminRouter = require('./router/superadmin');
 const Email = require('./router/email');
 const BaiduaiRouter = require('./router/BaiduaiRouter');
+const userRouter = require('./router/userRouter');
 
 app.use('/private',SuperadminRouter);
 
 app.use('/public',Email);
-app.use('/public',BaiduaiRouter)
+app.use('/public',BaiduaiRouter);
+app.use('/public',userRouter);
 
 // 设置端口
 const port = 9008
