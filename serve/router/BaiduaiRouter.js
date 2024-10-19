@@ -3,12 +3,38 @@ const axios = require('axios');
 const app = express();
 const router = require('express').Router();
 require('dotenv').config({path: './.env'});
+const db = require('../db/index')
 
 const AK =  process.env.AK;
 const SK =  process.env.SK;
 
+async function validateUser(username,usertoken){
+	const sql = `SELECT * FROM user WHERE username = '${username}' AND usertoken = '${usertoken}'`
+	const result = await db.query(sql);
+	return result.length > 0;
+}
+
 router.get('/baiduai', async (req, res) => {
+	const {username,usertoken} = req.query;
+	
+	const isValidate = await validateUser(username,usertoken);
+	if(!isValidate){
+		return res.status(403).send({
+			code:403,
+			err:'未经授权的访问'
+		})
+	}
+	
+	
     const userMessage = req.query.message; // 获取前端传递的 input.value
+	
+	if(userMessage === ''){
+		return res.status(500).send({
+			code:500,
+			error:'消息不能为空'
+		})
+	}
+	
 	// console.log(userMessage)
     try {
         const accessToken = await getAccessToken();
