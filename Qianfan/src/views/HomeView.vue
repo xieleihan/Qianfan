@@ -1,9 +1,13 @@
+<template>
+  <div>
+    <h3>这是首页</h3>
+  </div>
+</template>
+
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+
 </script>
 
-<template>
-  <main>
-    <TheWelcome />
-  </main>
-</template>
+<style scoped lang="less">
+
+</style>
