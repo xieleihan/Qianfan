@@ -17,8 +17,8 @@
 
 <script setup lang="ts">
 import CodeWatch from '../components/CodeWatch.vue';
-import router from '../router/index.ts';
-import { useStartStore } from '../stores/start.ts';
+import router from '../router/index';
+import { useStartStore } from '../stores/start';
 
 const startStore = useStartStore();
 

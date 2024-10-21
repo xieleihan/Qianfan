@@ -135,8 +135,8 @@
 
 <script setup lang="ts">
 import { ref,onMounted } from 'vue';
-import { useStartStore } from '../stores/start.ts';
-import router from '../router/index.ts';
+import { useStartStore } from '../stores/start';
+import router from '../router/index';
 import axios from 'axios';
 import { showToast, showSuccessToast, showFailToast } from 'vant';
 import { showConfirmDialog } from 'vant';
@@ -150,7 +150,7 @@ const queryuserpassword = ref('');
 const inputverimgcode = ref('');
 const checkbox = ref(false);
 
-const intervalId = ref(null);
+const intervalId = ref<number | null>(null);
 const countdown = ref(180); // 倒计时初始值
 function sendEmailCode() {
     const reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
@@ -190,7 +190,7 @@ function startCountdown() {
         emailtitle.value = `${countdown.value}s`;
 
         if (countdown.value <= 0) {
-            clearInterval(intervalId.value);
+            clearInterval(intervalId.value as number);
             intervalId.value = null;
             emailtitle.value = '发送验证码';
         }
@@ -233,7 +233,9 @@ function sendRegister() {
                 // console.log(res);
                 if (res.data.code === 200) {
                     showSuccessToast('注册成功');
-                    router.push({ name: 'login' });
+                    setTimeout(() => {
+                        router.push({ name: 'login' });
+                    }, 1000);
                 } else {
                     showFailToast('注册失败');
                 }

@@ -3,20 +3,20 @@
         <div class="container">
             <p class="title">登录</p>
             <p class="info">欢迎回来</p>
-            <input class="input" type="text" placeholder="请输入用户名">
+            <input v-model="inputusername" class="input" type="text" placeholder="请输入用户名">
             <div class="passwordBox">
-                <input id="passwordinput" class="input" :type="passwordType" placeholder="请输入密码">
+                <input v-model="inputuserpassword" id="passwordinput" class="input" :type="passwordType" placeholder="请输入密码">
                 <img @click="toggleType" :src="imgSrc" alt="切换密码显示">
             </div>
             <div class="format">
                 <span>忘记密码?</span>
             </div>
             <div class="protype">
-                <input type="checkbox">
+                <input type="checkbox" v-model="checkbox">
                 <span>我已阅读并同意千帆大模型的<span class="textDisplay" @click="showPopup">《用户协议》</span>和<span
                         class="textDisplay" @click="showPopup1">《隐私政策》</span></span>
             </div>
-            <button>登录</button>
+            <button @click="sendLogin">登录</button>
             <button @click="returnTop" class="returnTop">返回</button>
             <div class="goToRegister"><span @click="goToRegister">还没账户?点击加入我们</span></div>
         </div>
@@ -127,8 +127,54 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStartStore } from '../stores/start.ts';
-import router from '../router/index.ts';
+import { useStartStore } from '../stores/start';
+import router from '../router/index';
+import { showConfirmDialog } from 'vant';
+import axios from 'axios';
+import { showToast } from 'vant';
+
+
+const inputusername = ref('');
+const inputuserpassword = ref('');
+const checkbox = ref(false);
+
+function sendLogin() {
+    if (checkbox.value === false) {
+        showConfirmDialog({
+            title: '提示',
+            message:
+                '请阅读并同意用户协议和隐私政策',
+        })
+            .then(() => {
+                // on confirm
+                checkbox.value = true;
+            })
+            .catch(() => {
+                // on cancel
+                return;
+            });
+    } else {
+        axios.post('https://frp-leg.top:26112/public/login', {
+            username: inputusername.value,
+            userpassword: inputuserpassword.value
+        }).then((res) => {
+            console.log(res);
+            if (res.data.code === 200) {
+                document.cookie = `token=${res.data.token}`;
+                sessionStorage.setItem('usertoken', res.data.token);
+                sessionStorage.setItem('username', res.data.username);
+                showToast('登录成功');
+                setTimeout(() => {
+                    router.push({ name: 'home' });
+                }, 1000);
+            } else {
+                showToast('登录失败');
+            }
+        }).catch(() => {
+            showToast('网络故障');
+        });
+    }
+}
 
 const show = ref(false);
 const showPopup = () => {
